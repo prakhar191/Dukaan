@@ -113,7 +113,8 @@ const Products = () => {
                   <li
                     className="category-link"
                     key={category.categoryName}
-                    onClick={() => setCategory(category.categoryName)}>
+                    onClick={() => setCategory(category.categoryName)}
+                  >
                     {category.categoryName}
                   </li>
                 ))}
@@ -143,7 +144,7 @@ const Products = () => {
           </div>
           {/* {resultPerPage < count && ( */}
           <div className="paginationBox">
-            <Pagination page={page} pages={pages} changePage={setPage} />
+            {/* <Pagination page={page} pages={pages} changePage={setPage} /> */}
           </div>
           {/* )} */}
         </Fragment>

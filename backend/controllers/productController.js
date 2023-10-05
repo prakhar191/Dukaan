@@ -102,15 +102,39 @@ exports.getAllProducts = catchAsyncErrors(async (req, res) => {
 
   let products = await apiFeature.query;
 
+  // console.log(products);
+
   let productsCount = products.length;
-  const pages = Math.ceil(productsCount / resultPerPage);
+  // const pages = Math.ceil(productsCount / resultPerPage);
+  const pages = productsCount;
 
-  const apiFeature2 = new ApiFeatures(Product.find(), req.query)
-    .search()
-    .filter()
-    .pagination(resultPerPage);
+  // const apiFeature2 = new ApiFeatures(Product.find(), req.query)
+  // .search()
+  //   .filter()
+  // .pagination(
+  //   resultPerPage
+  // );
 
-  products = await apiFeature2.query;
+  // products = await apiFeature2.query;
+  let sortedItems = products.sort((p1, p2) => {
+    if (p1.numOFReviews !== p2.numOFReviews) {
+      return p1.numOFReviews < p2.numOFReviews
+        ? 1
+        : p1.numOFReviews > p2.numOFReviews
+        ? -1
+        : 0;
+    } else if (p1.rating !== p2.rating) {
+      return p1.rating < p2.rating ? 1 : p1.rating > p2.rating ? -1 : 0;
+    } else {
+      return p1.numberOfViews < p2.numberOfViews
+        ? 1
+        : p1.numberOfViews > p2.numberOfViews
+        ? -1
+        : 0;
+    }
+  });
+
+  products = sortedItems;
 
   res.status(200).json({
     success: true,
@@ -137,6 +161,12 @@ exports.getProductDetails = catchAsyncErrors(async (req, res, next) => {
   if (!product) {
     return next(new ErrorHandler("Product not found", 404));
   }
+
+  var views = product.numberOfViews;
+  views = views + 1;
+  product.numberOfViews = views;
+
+  await product.save({ validateBeforeSave: false });
 
   res.status(200).json({
     success: true,
